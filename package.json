@@ -1,0 +1,21 @@
+{
+  "name": "@freezm-ltd/event-target-2",
+  "version": "0.0.1",
+  "type": "module",
+  "description": "Easier version of EventTarget, with some utils",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/freezm-ltd/EventTarget2.git"
+  },
+  "keywords": ["event"],
+  "author": "",
+  "license": "MIT",
+  "homepage": "https://github.com/freezm-ltd/EventTarget2",
+  "devDependencies": {
+    "typescript": "^5.5.3"
+  }
+}
