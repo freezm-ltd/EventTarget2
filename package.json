@@ -5,7 +5,8 @@
   "description": "Easier version of EventTarget, with some utils",
   "main": "index.js",
   "scripts": {
-    "build": "tsc && esbuild --target=es2020 --bundle src/index.ts --platform=browser --outdir=dist"
+    "build": "tsc && esbuild --target=es2020 --bundle src/index.ts --platform=browser --outdir=dist",
+    "publish": "npm publish --access=public"
   },
   "repository": {
     "type": "git",
