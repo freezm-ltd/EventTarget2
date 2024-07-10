@@ -1,12 +1,15 @@
 {
   "name": "@freezm-ltd/event-target-2",
-  "version": "0.0.1",
+  "version": "0.0.4",
   "type": "module",
   "description": "Easier version of EventTarget, with some utils",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "build": "tsc && esbuild --target=es2020 --bundle src/index.ts --platform=browser --outdir=dist",
-    "publish": "npm publish --access=public"
+    "build": "tsc && esbuild --target=es2020 --bundle src/index.ts --platform=browser --outdir=dist"
   },
   "repository": {
     "type": "git",
