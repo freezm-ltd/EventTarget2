@@ -6,9 +6,13 @@ export class EventTarget2 extends EventTarget {
     state?: EventTarget2State
     listeners: Map<string, Set<EventListener2>> = new Map()
 
-    async waitFor(type: string) {
+    async waitFor(type: string, compareValue?: any) {
         return new Promise((resolve) => {
-            this.addEventListener(type, resolve, { once: true });
+            if (compareValue) {
+                this.listenOnceOnly(type, resolve, (e) => e.detail === compareValue)
+            } else {
+                this.listenOnce(type, resolve)
+            }
         });
     }
 

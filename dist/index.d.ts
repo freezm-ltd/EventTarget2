@@ -4,7 +4,7 @@ export declare class EventTarget2 extends EventTarget {
     parent?: EventTarget2;
     state?: EventTarget2State;
     listeners: Map<string, Set<EventListener2>>;
-    waitFor(type: string): Promise<unknown>;
+    waitFor(type: string, compareValue?: any): Promise<unknown>;
     callback<T>(type: string, callback: (result?: T) => void): void;
     dispatch<T>(type: string, detail?: T): void;
     listen<T, R>(type: string, callback: EventListener2<T, R>, options?: boolean | AddEventListenerOptions | undefined): void;

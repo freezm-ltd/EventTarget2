@@ -5,9 +5,13 @@ var EventTarget2 = class extends EventTarget {
     this.listeners = /* @__PURE__ */ new Map();
     this._bubbleMap = /* @__PURE__ */ new Map();
   }
-  async waitFor(type) {
+  async waitFor(type, compareValue) {
     return new Promise((resolve) => {
-      this.addEventListener(type, resolve, { once: true });
+      if (compareValue) {
+        this.listenOnceOnly(type, resolve, (e) => e.detail === compareValue);
+      } else {
+        this.listenOnce(type, resolve);
+      }
     });
   }
   callback(type, callback) {
