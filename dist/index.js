@@ -2,6 +2,7 @@
 var EventTarget2 = class extends EventTarget {
   constructor() {
     super(...arguments);
+    this.listeners = /* @__PURE__ */ new Map();
     this._bubbleMap = /* @__PURE__ */ new Map();
   }
   async waitFor(type) {
@@ -16,10 +17,21 @@ var EventTarget2 = class extends EventTarget {
     this.dispatchEvent(new CustomEvent(type, detail ? { detail } : void 0));
   }
   listen(type, callback, options) {
+    if (!this.listeners.has(type)) this.listeners.set(type, /* @__PURE__ */ new Set());
+    this.listeners.get(type).add(callback);
     this.addEventListener(type, callback, options);
   }
   remove(type, callback, options) {
+    if (!this.listeners.has(type)) this.listeners.set(type, /* @__PURE__ */ new Set());
+    this.listeners.get(type).delete(callback);
     this.removeEventListener(type, callback, options);
+  }
+  destroy() {
+    for (let type of this.listeners.keys()) {
+      for (let callback of this.listeners.get(type)) {
+        this.remove(type, callback);
+      }
+    }
   }
   listenOnce(type, callback) {
     this.listen(type, callback, { once: true });

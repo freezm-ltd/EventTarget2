@@ -4,6 +4,7 @@ type EventTarget2State = number | string | symbol
 export class EventTarget2 extends EventTarget {
     parent?: EventTarget2;
     state?: EventTarget2State
+    listeners: Map<string, Set<EventListener2>> = new Map()
 
     async waitFor(type: string) {
         return new Promise((resolve) => {
@@ -20,11 +21,23 @@ export class EventTarget2 extends EventTarget {
     }
 
     listen<T, R>(type: string, callback: EventListener2<T, R>, options?: boolean | AddEventListenerOptions | undefined) {
+        if (!this.listeners.has(type)) this.listeners.set(type, new Set())
+        this.listeners.get(type)!.add(callback)
         this.addEventListener(type, callback as unknown as EventListener, options);
     }
 
     remove<T, R>(type: string, callback: EventListener2<T, R>, options?: boolean | AddEventListenerOptions | undefined) {
+        if (!this.listeners.has(type)) this.listeners.set(type, new Set())
+        this.listeners.get(type)!.delete(callback)
         this.removeEventListener(type, callback as unknown as EventListener, options);
+    }
+
+    destroy() {
+        for (let type of this.listeners.keys()) {
+            for (let callback of this.listeners.get(type)!) {
+                this.remove(type, callback)
+            }
+        }
     }
 
     listenOnce<T, R>(type: string, callback: EventListener2<T, R>) {
