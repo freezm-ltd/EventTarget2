@@ -1,5 +1,5 @@
-type EventListener2<T = any, R = any> = (evt: CustomEvent<T>) => R;
-type EventTarget2State = number | string | symbol;
+export type EventListener2<T = any, R = any> = (evt: CustomEvent<T>) => R;
+export type EventTarget2State = number | string | symbol;
 export declare class EventTarget2 extends EventTarget {
     parent?: EventTarget2;
     state?: EventTarget2State;
@@ -27,4 +27,3 @@ export declare class EventTarget2 extends EventTarget {
     disableBubble(type: string): void;
 }
 export declare function atomicDo(func: () => PromiseLike<any> | any, target: EventTarget2, state?: number | string | symbol, endEvent?: string): Promise<void>;
-export {};
