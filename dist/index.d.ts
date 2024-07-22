@@ -25,5 +25,7 @@ export declare class EventTarget2 extends EventTarget {
     protected _bubbleMap: Map<string, EventListener2>;
     enableBubble(type: string): void;
     disableBubble(type: string): void;
+    protected atomicQueue: Map<string, Array<() => PromiseLike<any> | any>>;
+    _atomicInit(type: string): void;
+    atomic(type: string, func: () => PromiseLike<any> | any): Promise<unknown>;
 }
-export declare function atomicDo(func: () => PromiseLike<any> | any, target: EventTarget2, state?: number | string | symbol, endEvent?: string): Promise<void>;

@@ -107,13 +107,29 @@ export class EventTarget2 extends EventTarget {
         this.remove(type, dispatcher)
         this._bubbleMap.delete(type)
     }
-}
 
-export async function atomicDo(func: () => PromiseLike<any> | any, target: EventTarget2, state: number | string | symbol = "busy", endEvent = "end") {
-    if (target.state === state) await target.waitFor(endEvent);
-    const previousState = target.state
-    target.state = state
-    const result = await func()
-    target.state = previousState
-    target.dispatch(endEvent)
+    protected atomicQueue: Map<string, Array<() => PromiseLike<any> | any>> = new Map()
+    _atomicInit(type: string) {
+        this.atomicQueue.set(type, []);
+        const atomicLoop = async () => {
+            const queue = this.atomicQueue.get(type)!
+            while (true) {
+                const task = queue.shift()
+                if (task) {
+                    await task()
+                } else {
+                    await this.waitFor("__atomic-add", type);
+                }
+            }
+        }
+        atomicLoop()
+    }
+    atomic(type: string, func: () => PromiseLike<any> | any) {
+        return new Promise((resolve) => {
+            const wrap = async () => resolve(await func())
+            if (!this.atomicQueue.has(type)) this._atomicInit(type);
+            this.atomicQueue.get(type)!.push(wrap)
+            this.dispatch("__atomic-add", type)
+        })
+    }
 }
