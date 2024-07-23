@@ -8,7 +8,7 @@ var EventTarget2 = class extends EventTarget {
   }
   async waitFor(type, compareValue) {
     return new Promise((resolve) => {
-      if (compareValue) {
+      if (compareValue !== void 0) {
         this.listenOnceOnly(type, resolve, (e) => e.detail === compareValue);
       } else {
         this.listenOnce(type, resolve);
@@ -19,7 +19,7 @@ var EventTarget2 = class extends EventTarget {
     this.waitFor(type).then((result) => callback(result));
   }
   dispatch(type, detail) {
-    this.dispatchEvent(new CustomEvent(type, detail ? { detail } : void 0));
+    this.dispatchEvent(new CustomEvent(type, detail !== void 0 ? { detail } : void 0));
   }
   listen(type, callback, options) {
     if (!this.listeners.has(type)) this.listeners.set(type, /* @__PURE__ */ new Set());

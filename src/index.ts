@@ -8,7 +8,7 @@ export class EventTarget2 extends EventTarget {
 
     async waitFor(type: string, compareValue?: any) {
         return new Promise((resolve) => {
-            if (compareValue) {
+            if (compareValue !== undefined) {
                 this.listenOnceOnly(type, resolve, (e) => e.detail === compareValue)
             } else {
                 this.listenOnce(type, resolve)
@@ -21,7 +21,7 @@ export class EventTarget2 extends EventTarget {
     }
 
     dispatch<T>(type: string, detail?: T) {
-        this.dispatchEvent(new CustomEvent(type, detail ? { detail } : undefined));
+        this.dispatchEvent(new CustomEvent(type, detail !== undefined ? { detail } : undefined));
     }
 
     listen<T, R>(type: string, callback: EventListener2<T, R>, options?: boolean | AddEventListenerOptions | undefined) {
