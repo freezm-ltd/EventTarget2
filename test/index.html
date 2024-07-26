@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EventTarget2 test</title>
+</head>
+
+<body>
+    <script type="module">
+        import { EventTarget2 } from "./index.js"
+
+        function sleep(ms) {
+            return new Promise((resolve) => setTimeout(resolve, ms));
+        }
+
+        const target = new EventTarget2()
+        window.test = {
+            atomic(size = 100, stdms = 100) {
+                const asyncs = Array.from({ length: size }, (_, i) => {
+                    return async () => {
+                        const ms = stdms * Math.random()
+                        await sleep(ms)
+                        return `${i}, sleeped: ${ms}`
+                    }
+                })
+                for (let f of asyncs) {
+                    target.atomic("test", f).then(console.log)
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>
