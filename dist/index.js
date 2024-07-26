@@ -9,14 +9,14 @@ var EventTarget2 = class extends EventTarget {
   async waitFor(type, compareValue) {
     return new Promise((resolve) => {
       if (compareValue !== void 0) {
-        this.listenOnceOnly(type, resolve, (e) => e.detail === compareValue);
+        this.listenOnceOnly(type, (e) => resolve(e.detail), (e) => e.detail === compareValue);
       } else {
-        this.listenOnce(type, resolve);
+        this.listenOnce(type, (e) => resolve(e.detail));
       }
     });
   }
   callback(type, callback) {
-    this.waitFor(type).then((result) => callback(result));
+    this.waitFor(type).then(callback);
   }
   dispatch(type, detail) {
     this.dispatchEvent(new CustomEvent(type, detail !== void 0 ? { detail } : void 0));

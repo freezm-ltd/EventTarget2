@@ -6,31 +6,31 @@ export class EventTarget2 extends EventTarget {
     state?: EventTarget2State
     listeners: Map<string, Set<EventListener2>> = new Map()
 
-    async waitFor(type: string, compareValue?: any) {
+    async waitFor<T>(type: string, compareValue?: T): Promise<T> {
         return new Promise((resolve) => {
             if (compareValue !== undefined) {
-                this.listenOnceOnly(type, resolve, (e) => e.detail === compareValue)
+                this.listenOnceOnly<T, void>(type, (e) => resolve(e.detail), (e) => e.detail === compareValue)
             } else {
-                this.listenOnce(type, resolve)
+                this.listenOnce<T, void>(type, (e) => resolve(e.detail))
             }
         });
     }
 
     callback<T>(type: string, callback: (result?: T) => void) {
-        this.waitFor(type).then((result) => callback(result as T));
+        this.waitFor<T>(type).then(callback);
     }
 
     dispatch<T>(type: string, detail?: T) {
         this.dispatchEvent(new CustomEvent(type, detail !== undefined ? { detail } : undefined));
     }
 
-    listen<T, R>(type: string, callback: EventListener2<T, R>, options?: boolean | AddEventListenerOptions | undefined) {
+    listen<T, R = void>(type: string, callback: EventListener2<T, R>, options?: boolean | AddEventListenerOptions | undefined) {
         if (!this.listeners.has(type)) this.listeners.set(type, new Set())
         this.listeners.get(type)!.add(callback)
         this.addEventListener(type, callback as unknown as EventListener, options);
     }
 
-    remove<T, R>(type: string, callback: EventListener2<T, R>, options?: boolean | AddEventListenerOptions | undefined) {
+    remove<T, R = void>(type: string, callback: EventListener2<T, R>, options?: boolean | AddEventListenerOptions | undefined) {
         if (!this.listeners.has(type)) this.listeners.set(type, new Set())
         this.listeners.get(type)!.delete(callback)
         this.removeEventListener(type, callback as unknown as EventListener, options);
@@ -44,30 +44,30 @@ export class EventTarget2 extends EventTarget {
         }
     }
 
-    listenOnce<T, R>(type: string, callback: EventListener2<T, R>) {
-        this.listen(type, callback, { once: true });
+    listenOnce<T, R = void>(type: string, callback: EventListener2<T, R>) {
+        this.listen<T, R>(type, callback, { once: true });
     }
 
-    listenOnceOnly<T, R>(type: string, callback: EventListener2<T, R>, only: EventListener2<T, boolean>) {
+    listenOnceOnly<T, R = void>(type: string, callback: EventListener2<T, R>, only: EventListener2<T, boolean>) {
         const wrapper = (e: CustomEvent<T>) => {
             if (only(e)) {
                 this.remove(type, wrapper)
                 callback(e)
             }
         }
-        this.listen(type, wrapper)
+        this.listen<T, void>(type, wrapper)
     }
 
-    listenDebounce<T, R>(type: string, callback: EventListener2<T, R>, options: { timeout: number, mode: "first" | "last" } & AddEventListenerOptions = { timeout: 100, mode: "last" }) {
+    listenDebounce<T, R = void>(type: string, callback: EventListener2<T, R>, options: { timeout: number, mode: "first" | "last" } & AddEventListenerOptions = { timeout: 100, mode: "last" }) {
         switch (options.mode) {
-            case "first": return this.listenDebounceFirst(type, callback, options);
-            case "last": return this.listenDebounceLast(type, callback, options);
+            case "first": return this.listenDebounceFirst<T, R>(type, callback, options);
+            case "last": return this.listenDebounceLast<T, R>(type, callback, options);
         }
     }
 
-    listenDebounceFirst<T, R>(type: string, callback: EventListener2<T, R>, options: { timeout: number } & AddEventListenerOptions = { timeout: 100 }) {
+    listenDebounceFirst<T, R = void>(type: string, callback: EventListener2<T, R>, options: { timeout: number } & AddEventListenerOptions = { timeout: 100 }) {
         let lastMs = 0
-        this.listen(
+        this.listen<T, void>(
             type,
             (e: CustomEvent<T>) => {
                 const currentMs = Date.now()
@@ -80,9 +80,9 @@ export class EventTarget2 extends EventTarget {
         )
     }
 
-    listenDebounceLast<T, R>(type: string, callback: EventListener2<T, R>, options: { timeout: number } & AddEventListenerOptions = { timeout: 100 }) {
+    listenDebounceLast<T, R = void>(type: string, callback: EventListener2<T, R>, options: { timeout: number } & AddEventListenerOptions = { timeout: 100 }) {
         let timoutInstance: number;
-        this.listen(
+        this.listen<T, void>(
             type,
             (e: CustomEvent<T>) => {
                 clearTimeout(timoutInstance);
