@@ -23,6 +23,7 @@ export declare class EventTarget2 extends EventTarget {
     listenDebounceLast<T, R = void>(type: string, callback: EventListener2<T, R>, options?: {
         timeout: number;
     } & AddEventListenerOptions): void;
+    static race<T, R = void>(targets: Array<EventTarget2>, type: string, callback: EventListener2<T, R>): void;
     protected _bubbleMap: Map<string, EventListener2>;
     enableBubble(type: string): void;
     disableBubble(type: string): void;

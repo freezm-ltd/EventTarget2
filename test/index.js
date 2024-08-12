@@ -92,6 +92,21 @@ var EventTarget2 = class extends EventTarget {
       options
     );
   }
+  static race(targets, type, callback) {
+    let fired = false;
+    const wrapper = (e) => {
+      if (!fired) {
+        fired = true;
+        callback(e);
+        for (let target of targets) {
+          target.remove(type, wrapper);
+        }
+      }
+    };
+    for (let target of targets) {
+      target.listenOnce(type, wrapper);
+    }
+  }
   enableBubble(type) {
     if (this._bubbleMap.has(type)) return;
     const dispatcher = (e) => {

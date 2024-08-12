@@ -102,6 +102,22 @@ export class EventTarget2 extends EventTarget {
         );
     }
 
+    static race<T, R = void>(targets: Array<EventTarget2>, type: string, callback: EventListener2<T, R>) {
+        let fired = false
+        const wrapper = (e: CustomEvent<T>) => {
+            if (!fired) {
+                fired = true
+                callback(e)
+                for (let target of targets) {
+                    target.remove(type, wrapper)
+                }
+            }
+        }
+        for (let target of targets) {
+            target.listenOnce(type, wrapper)
+        }
+    }
+
     protected _bubbleMap: Map<string, EventListener2> = new Map()
     enableBubble(type: string) {
         if (this._bubbleMap.has(type)) return;
