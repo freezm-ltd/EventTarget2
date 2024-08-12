@@ -12,6 +12,7 @@ export declare class EventTarget2 extends EventTarget {
     destroy(): void;
     listenOnce<T, R = void>(type: string, callback: EventListener2<T, R>): void;
     listenOnceOnly<T, R = void>(type: string, callback: EventListener2<T, R>, only: EventListener2<T, boolean>): void;
+    listenWhile<T, R = void>(type: string, callback: EventListener2<T, R>, whileFunc: EventListener2<T, boolean>): void;
     listenDebounce<T, R = void>(type: string, callback: EventListener2<T, R>, options?: {
         timeout: number;
         mode: "first" | "last";

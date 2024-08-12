@@ -58,6 +58,16 @@ export class EventTarget2 extends EventTarget {
         this.listen<T, void>(type, wrapper)
     }
 
+    listenWhile<T, R = void>(type: string, callback: EventListener2<T, R>, whileFunc: EventListener2<T, boolean>) {
+        const wrapper = (e: CustomEvent<T>) => {
+            callback(e)
+            if (!whileFunc(e)) {
+                this.remove(type, wrapper)
+            }
+        }
+        this.listen<T, void>(type, wrapper)
+    }
+
     listenDebounce<T, R = void>(type: string, callback: EventListener2<T, R>, options: { timeout: number, mode: "first" | "last" } & AddEventListenerOptions = { timeout: 100, mode: "last" }) {
         switch (options.mode) {
             case "first": return this.listenDebounceFirst<T, R>(type, callback, options);

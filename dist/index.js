@@ -50,6 +50,15 @@ var EventTarget2 = class extends EventTarget {
     };
     this.listen(type, wrapper);
   }
+  listenWhile(type, callback, whileFunc) {
+    const wrapper = (e) => {
+      callback(e);
+      if (!whileFunc(e)) {
+        this.remove(type, wrapper);
+      }
+    };
+    this.listen(type, wrapper);
+  }
   listenDebounce(type, callback, options = { timeout: 100, mode: "last" }) {
     switch (options.mode) {
       case "first":
