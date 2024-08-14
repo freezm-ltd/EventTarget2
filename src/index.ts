@@ -150,8 +150,8 @@ export class EventTarget2 extends EventTarget {
         }
         atomicLoop()
     }
-    atomic(type: string, func: () => PromiseLike<any> | any) {
-        return new Promise((resolve) => {
+    atomic<T>(type: string, func: () => PromiseLike<T> | T) {
+        return new Promise<T>((resolve) => {
             const wrap = async () => resolve(await func())
             if (!this.atomicQueue.has(type)) this._atomicInit(type);
             this.atomicQueue.get(type)!.push(wrap)
