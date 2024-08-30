@@ -107,10 +107,11 @@ var EventTarget2 = class extends EventTarget {
       target.listenOnce(type, wrapper);
     }
   }
-  enableBubble(type) {
+  enableBubble(type, parentFunc) {
     if (this._bubbleMap.has(type)) return;
     const dispatcher = (e) => {
-      this.parent?.dispatch(e.type, e.detail);
+      const parent = parentFunc ? parentFunc() : this.parent;
+      parent?.dispatch(e.type, e.detail);
     };
     this.listen(type, dispatcher);
     this._bubbleMap.set(type, dispatcher);

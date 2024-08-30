@@ -25,7 +25,7 @@ export declare class EventTarget2 extends EventTarget {
     } & AddEventListenerOptions): void;
     static race<T, R = void>(targets: Array<EventTarget2>, type: string, callback: EventListener2<T, R>): void;
     protected _bubbleMap: Map<string, EventListener2>;
-    enableBubble(type: string): void;
+    enableBubble(type: string, parentFunc?: () => EventTarget2): void;
     disableBubble(type: string): void;
     protected atomicQueue: Map<string, Array<() => PromiseLike<any> | any>>;
     _atomicInit(type: string): void;
