@@ -119,7 +119,7 @@ export class EventTarget2 extends EventTarget {
     }
 
     protected _bubbleMap: Map<string, EventListener2> = new Map()
-    enableBubble(type: string, parentFunc?: () => EventTarget2) {
+    enableBubble(type: string, parentFunc?: () => EventTarget2 | undefined) {
         if (this._bubbleMap.has(type)) return;
         const dispatcher = (e: CustomEvent) => {
             const parent = parentFunc ? parentFunc() : this.parent
