@@ -2,13 +2,13 @@ export type EventListener2<T = any, R = any> = (evt: CustomEvent<T>) => R;
 export type EventTarget2State = number | string | symbol;
 type _EventMapKey<EventMap> = Extract<keyof EventMap, string>;
 type EventMapKey<EventMap> = (_EventMapKey<EventMap> extends never ? string : _EventMapKey<EventMap>);
-export declare class EventTarget2<EventMap extends Record<string, Event> = {}, K extends string = EventMapKey<EventMap>> extends EventTarget {
+export declare class EventTarget2<EventMap extends Record<string, CustomEvent> = {}, K extends string = EventMapKey<EventMap>> extends EventTarget {
     parent?: EventTarget2;
     state?: EventTarget2State;
     listeners: Map<string, Set<EventListener2>>;
     waitFor<T>(type: K, compareValue?: T): Promise<T>;
     callback<T>(type: K, callback: (result?: T) => void): void;
-    dispatch<T>(type: K, detail?: T): void;
+    dispatch<T = EventMap[K]["detail"]>(type: K, detail?: T): void;
     listen<T, R = void>(type: K, callback: EventListener2<T, R>, options?: boolean | AddEventListenerOptions | undefined): void;
     remove<T, R = void>(type: K, callback: EventListener2<T, R>, options?: boolean | AddEventListenerOptions | undefined): void;
     destroy(): void;

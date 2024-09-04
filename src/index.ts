@@ -4,7 +4,7 @@ export type EventTarget2State = number | string | symbol
 type _EventMapKey<EventMap> = Extract<keyof EventMap, string>
 type EventMapKey<EventMap> = (_EventMapKey<EventMap> extends never ? string : _EventMapKey<EventMap>)
 
-export class EventTarget2<EventMap extends Record<string, Event> = {}, K extends string = EventMapKey<EventMap>> extends EventTarget {
+export class EventTarget2<EventMap extends Record<string, CustomEvent> = {}, K extends string = EventMapKey<EventMap>> extends EventTarget {
     parent?: EventTarget2;
     state?: EventTarget2State
     listeners: Map<string, Set<EventListener2>> = new Map()
@@ -23,7 +23,7 @@ export class EventTarget2<EventMap extends Record<string, Event> = {}, K extends
         this.waitFor<T>(type).then(callback);
     }
 
-    dispatch<T>(type: K, detail?: T) {
+    dispatch<T = EventMap[K]["detail"]>(type: K, detail?: T) {
         this.dispatchEvent(new CustomEvent(type, detail !== undefined ? { detail } : undefined));
     }
 
