@@ -2,39 +2,39 @@ export type EventListener2<T = any, R = any> = (evt: CustomEvent<T>) => R
 export type EventTarget2State = number | string | symbol
 
 export type EventMap = Record<string, CustomEvent>
-type _EventMapKey<EventMap> = Extract<keyof EventMap, string>
-export type EventMapKey<EventMap> = (_EventMapKey<EventMap> extends never ? string : _EventMapKey<EventMap>)
+export type EventMapKey<E extends EventMap> = keyof E extends never ? string : Extract<keyof E, string>
+export type Detail<E extends EventMap, K extends keyof E> = E[K]["detail"]
 
 export class EventTarget2<E extends EventMap = {}, K extends string = EventMapKey<E>> extends EventTarget {
-    parent?: EventTarget2;
+    parent?: EventTarget2<E, K>;
     state?: EventTarget2State
     listeners: Map<string, Set<EventListener2>> = new Map()
 
-    async waitFor<T>(type: K, compareValue?: T): Promise<T> {
+    async waitFor<P extends K, T = Detail<E, P>>(type: P, compareValue?: T): Promise<T> {
         return new Promise((resolve) => {
             if (compareValue !== undefined) {
-                this.listenOnceOnly<T, void>(type, (e) => resolve(e.detail), (e) => e.detail === compareValue)
+                this.listenOnceOnly(type, (e) => resolve(e.detail), (e) => e.detail === compareValue)
             } else {
-                this.listenOnce<T, void>(type, (e) => resolve(e.detail))
+                this.listenOnce(type, (e) => resolve(e.detail))
             }
         });
     }
 
-    callback<T>(type: K, callback: (result?: T) => void) {
-        this.waitFor<T>(type).then(callback);
+    callback<P extends K, T = Detail<E, P>>(type: P, callback: (result?: T) => void) {
+        this.waitFor(type).then(callback);
     }
 
-    dispatch<T = EventMap[K]["detail"]>(type: K, detail?: T) {
+    dispatch<P extends K, T = Detail<E, P>>(type: P, detail?: T) {
         this.dispatchEvent(new CustomEvent(type, detail !== undefined ? { detail } : undefined));
     }
 
-    listen<T, R = void>(type: K, callback: EventListener2<T, R>, options?: boolean | AddEventListenerOptions | undefined) {
+    listen<P extends K, T = Detail<E, P>>(type: P, callback: EventListener2<T>, options?: boolean | AddEventListenerOptions | undefined) {
         if (!this.listeners.has(type)) this.listeners.set(type, new Set())
         this.listeners.get(type)!.add(callback)
         this.addEventListener(type, callback as unknown as EventListener, options);
     }
 
-    remove<T, R = void>(type: K, callback: EventListener2<T, R>, options?: boolean | AddEventListenerOptions | undefined) {
+    remove<P extends K, T = Detail<E, P>>(type: P, callback: EventListener2<T>, options?: boolean | AddEventListenerOptions | undefined) {
         if (!this.listeners.has(type)) this.listeners.set(type, new Set())
         this.listeners.get(type)!.delete(callback)
         this.removeEventListener(type, callback as unknown as EventListener, options);
@@ -48,40 +48,40 @@ export class EventTarget2<E extends EventMap = {}, K extends string = EventMapKe
         }
     }
 
-    listenOnce<T, R = void>(type: K, callback: EventListener2<T, R>) {
-        this.listen<T, R>(type, callback, { once: true });
+    listenOnce<P extends K, T = Detail<E, P>>(type: P, callback: EventListener2<T>) {
+        this.listen(type, callback, { once: true });
     }
 
-    listenOnceOnly<T, R = void>(type: K, callback: EventListener2<T, R>, only: EventListener2<T, boolean>) {
+    listenOnceOnly<P extends K, T = Detail<E, P>>(type: P, callback: EventListener2<T>, only: EventListener2<T, boolean>) {
         const wrapper = (e: CustomEvent<T>) => {
             if (only(e)) {
                 this.remove(type, wrapper)
                 callback(e)
             }
         }
-        this.listen<T, void>(type, wrapper)
+        this.listen(type, wrapper)
     }
 
-    listenWhile<T, R = void>(type: K, callback: EventListener2<T, R>, whileFunc: EventListener2<T, boolean>) {
+    listenWhile<P extends K, T = Detail<E, P>>(type: P, callback: EventListener2<T>, whileFunc: EventListener2<T, boolean>) {
         const wrapper = (e: CustomEvent<T>) => {
             callback(e)
             if (!whileFunc(e)) {
                 this.remove(type, wrapper)
             }
         }
-        this.listen<T, void>(type, wrapper)
+        this.listen(type, wrapper)
     }
 
-    listenDebounce<T, R = void>(type: K, callback: EventListener2<T, R>, options: { timeout: number, mode: "first" | "last" } & AddEventListenerOptions = { timeout: 100, mode: "last" }) {
+    listenDebounce<P extends K, T = Detail<E, P>>(type: P, callback: EventListener2<T>, options: { timeout: number, mode: "first" | "last" } & AddEventListenerOptions = { timeout: 100, mode: "last" }) {
         switch (options.mode) {
-            case "first": return this.listenDebounceFirst<T, R>(type, callback, options);
-            case "last": return this.listenDebounceLast<T, R>(type, callback, options);
+            case "first": return this.listenDebounceFirst(type, callback, options);
+            case "last": return this.listenDebounceLast(type, callback, options);
         }
     }
 
-    listenDebounceFirst<T, R = void>(type: K, callback: EventListener2<T, R>, options: { timeout: number } & AddEventListenerOptions = { timeout: 100 }) {
+    listenDebounceFirst<P extends K, T = Detail<E, P>>(type: P, callback: EventListener2<T>, options: { timeout: number } & AddEventListenerOptions = { timeout: 100 }) {
         let lastMs = 0
-        this.listen<T, void>(
+        this.listen(
             type,
             (e: CustomEvent<T>) => {
                 const currentMs = Date.now()
@@ -94,9 +94,9 @@ export class EventTarget2<E extends EventMap = {}, K extends string = EventMapKe
         )
     }
 
-    listenDebounceLast<T, R = void>(type: K, callback: EventListener2<T, R>, options: { timeout: number } & AddEventListenerOptions = { timeout: 100 }) {
+    listenDebounceLast<P extends K, T = Detail<E, P>>(type: P, callback: EventListener2<T>, options: { timeout: number } & AddEventListenerOptions = { timeout: 100 }) {
         let timoutInstance: number;
-        this.listen<T, void>(
+        this.listen(
             type,
             (e: CustomEvent<T>) => {
                 clearTimeout(timoutInstance);
@@ -106,7 +106,7 @@ export class EventTarget2<E extends EventMap = {}, K extends string = EventMapKe
         );
     }
 
-    static race<T, R = void>(targets: Array<EventTarget2>, type: string, callback: EventListener2<T, R>) {
+    static race<T>(targets: Array<EventTarget2>, type: string, callback: EventListener2<T>) {
         let fired = false
         const wrapper = (e: CustomEvent<T>) => {
             if (!fired) {
@@ -125,9 +125,9 @@ export class EventTarget2<E extends EventMap = {}, K extends string = EventMapKe
     protected _bubbleMap: Map<string, EventListener2> = new Map()
     enableBubble(type: K, parentFunc?: () => EventTarget2 | undefined) {
         if (this._bubbleMap.has(type)) return;
-        const dispatcher = (e: CustomEvent) => {
+        const dispatcher = (e: CustomEvent<Detail<E, K>>) => {
             const parent = parentFunc ? parentFunc() : this.parent
-            parent?.dispatch(e.type, e.detail);
+            parent?.dispatch(e.type as any, e.detail);
         }
         this.listen(type, dispatcher);
         this._bubbleMap.set(type, dispatcher)
@@ -149,7 +149,7 @@ export class EventTarget2<E extends EventMap = {}, K extends string = EventMapKe
                 if (task) {
                     await task()
                 } else {
-                    await this.waitFor("__atomic-add" as any, type);
+                    await this.waitFor("__atomic-add" as any, type as any);
                 }
             }
         }
@@ -160,7 +160,7 @@ export class EventTarget2<E extends EventMap = {}, K extends string = EventMapKe
             const wrap = async () => resolve(await func())
             if (!this.atomicQueue.has(type)) this._atomicInit(type);
             this.atomicQueue.get(type)!.push(wrap)
-            this.dispatch("__atomic-add" as any, type)
+            this.dispatch("__atomic-add" as any, type as any)
         })
     }
 }
