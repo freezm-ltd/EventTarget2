@@ -7,23 +7,23 @@ export declare class EventTarget2<E extends EventMap = {}, K extends string = Ev
     parent?: EventTarget2<E, K>;
     state?: EventTarget2State;
     listeners: Map<string, Set<EventListener2>>;
-    waitFor<P extends K, T = Detail<E, P>>(type: P, compareValue?: T): Promise<T>;
-    callback<P extends K, T = Detail<E, P>>(type: P, callback: (result?: T) => void): void;
-    dispatch<P extends K, T = Detail<E, P>>(type: P, detail?: T): void;
-    listen<P extends K, T = Detail<E, P>>(type: P, callback: EventListener2<T>, options?: boolean | AddEventListenerOptions | undefined): void;
-    remove<P extends K, T = Detail<E, P>>(type: P, callback: EventListener2<T>, options?: boolean | AddEventListenerOptions | undefined): void;
+    waitFor<P extends K, T extends Detail<E, P>>(type: P, compareValue?: T): Promise<T>;
+    callback<P extends K, T extends Detail<E, P>>(type: P, callback: (result?: T) => void): void;
+    dispatch<P extends K, T extends Detail<E, P>>(type: P, detail?: T): void;
+    listen<P extends K, T extends Detail<E, P>>(type: P, callback: EventListener2<T>, options?: boolean | AddEventListenerOptions | undefined): void;
+    remove<P extends K, T extends Detail<E, P>>(type: P, callback: EventListener2<T>, options?: boolean | AddEventListenerOptions | undefined): void;
     destroy(): void;
-    listenOnce<P extends K, T = Detail<E, P>>(type: P, callback: EventListener2<T>): void;
-    listenOnceOnly<P extends K, T = Detail<E, P>>(type: P, callback: EventListener2<T>, only: EventListener2<T, boolean>): void;
-    listenWhile<P extends K, T = Detail<E, P>>(type: P, callback: EventListener2<T>, whileFunc: EventListener2<T, boolean>): void;
-    listenDebounce<P extends K, T = Detail<E, P>>(type: P, callback: EventListener2<T>, options?: {
+    listenOnce<P extends K, T extends Detail<E, P>>(type: P, callback: EventListener2<T>): void;
+    listenOnceOnly<P extends K, T extends Detail<E, P>>(type: P, callback: EventListener2<T>, only: EventListener2<T, boolean>): void;
+    listenWhile<P extends K, T extends Detail<E, P>>(type: P, callback: EventListener2<T>, whileFunc: EventListener2<T, boolean>): void;
+    listenDebounce<P extends K, T extends Detail<E, P>>(type: P, callback: EventListener2<T>, options?: {
         timeout: number;
         mode: "first" | "last";
     } & AddEventListenerOptions): void;
-    listenDebounceFirst<P extends K, T = Detail<E, P>>(type: P, callback: EventListener2<T>, options?: {
+    listenDebounceFirst<P extends K, T extends Detail<E, P>>(type: P, callback: EventListener2<T>, options?: {
         timeout: number;
     } & AddEventListenerOptions): void;
-    listenDebounceLast<P extends K, T = Detail<E, P>>(type: P, callback: EventListener2<T>, options?: {
+    listenDebounceLast<P extends K, T extends Detail<E, P>>(type: P, callback: EventListener2<T>, options?: {
         timeout: number;
     } & AddEventListenerOptions): void;
     static race<T>(targets: Array<EventTarget2>, type: string, callback: EventListener2<T>): void;

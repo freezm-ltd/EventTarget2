@@ -10,7 +10,7 @@ export class EventTarget2<E extends EventMap = {}, K extends string = EventMapKe
     state?: EventTarget2State
     listeners: Map<string, Set<EventListener2>> = new Map()
 
-    async waitFor<P extends K, T = Detail<E, P>>(type: P, compareValue?: T): Promise<T> {
+    async waitFor<P extends K, T extends Detail<E, P>>(type: P, compareValue?: T): Promise<T> {
         return new Promise((resolve) => {
             if (compareValue !== undefined) {
                 this.listenOnceOnly(type, (e) => resolve(e.detail), (e) => e.detail === compareValue)
@@ -20,21 +20,21 @@ export class EventTarget2<E extends EventMap = {}, K extends string = EventMapKe
         });
     }
 
-    callback<P extends K, T = Detail<E, P>>(type: P, callback: (result?: T) => void) {
+    callback<P extends K, T extends Detail<E, P>>(type: P, callback: (result?: T) => void) {
         this.waitFor(type).then(callback);
     }
 
-    dispatch<P extends K, T = Detail<E, P>>(type: P, detail?: T) {
+    dispatch<P extends K, T extends Detail<E, P>>(type: P, detail?: T) {
         this.dispatchEvent(new CustomEvent(type, detail !== undefined ? { detail } : undefined));
     }
 
-    listen<P extends K, T = Detail<E, P>>(type: P, callback: EventListener2<T>, options?: boolean | AddEventListenerOptions | undefined) {
+    listen<P extends K, T extends Detail<E, P>>(type: P, callback: EventListener2<T>, options?: boolean | AddEventListenerOptions | undefined) {
         if (!this.listeners.has(type)) this.listeners.set(type, new Set())
         this.listeners.get(type)!.add(callback)
         this.addEventListener(type, callback as unknown as EventListener, options);
     }
 
-    remove<P extends K, T = Detail<E, P>>(type: P, callback: EventListener2<T>, options?: boolean | AddEventListenerOptions | undefined) {
+    remove<P extends K, T extends Detail<E, P>>(type: P, callback: EventListener2<T>, options?: boolean | AddEventListenerOptions | undefined) {
         if (!this.listeners.has(type)) this.listeners.set(type, new Set())
         this.listeners.get(type)!.delete(callback)
         this.removeEventListener(type, callback as unknown as EventListener, options);
@@ -48,11 +48,11 @@ export class EventTarget2<E extends EventMap = {}, K extends string = EventMapKe
         }
     }
 
-    listenOnce<P extends K, T = Detail<E, P>>(type: P, callback: EventListener2<T>) {
+    listenOnce<P extends K, T extends Detail<E, P>>(type: P, callback: EventListener2<T>) {
         this.listen(type, callback, { once: true });
     }
 
-    listenOnceOnly<P extends K, T = Detail<E, P>>(type: P, callback: EventListener2<T>, only: EventListener2<T, boolean>) {
+    listenOnceOnly<P extends K, T extends Detail<E, P>>(type: P, callback: EventListener2<T>, only: EventListener2<T, boolean>) {
         const wrapper = (e: CustomEvent<T>) => {
             if (only(e)) {
                 this.remove(type, wrapper)
@@ -62,7 +62,7 @@ export class EventTarget2<E extends EventMap = {}, K extends string = EventMapKe
         this.listen(type, wrapper)
     }
 
-    listenWhile<P extends K, T = Detail<E, P>>(type: P, callback: EventListener2<T>, whileFunc: EventListener2<T, boolean>) {
+    listenWhile<P extends K, T extends Detail<E, P>>(type: P, callback: EventListener2<T>, whileFunc: EventListener2<T, boolean>) {
         const wrapper = (e: CustomEvent<T>) => {
             callback(e)
             if (!whileFunc(e)) {
@@ -72,14 +72,14 @@ export class EventTarget2<E extends EventMap = {}, K extends string = EventMapKe
         this.listen(type, wrapper)
     }
 
-    listenDebounce<P extends K, T = Detail<E, P>>(type: P, callback: EventListener2<T>, options: { timeout: number, mode: "first" | "last" } & AddEventListenerOptions = { timeout: 100, mode: "last" }) {
+    listenDebounce<P extends K, T extends Detail<E, P>>(type: P, callback: EventListener2<T>, options: { timeout: number, mode: "first" | "last" } & AddEventListenerOptions = { timeout: 100, mode: "last" }) {
         switch (options.mode) {
             case "first": return this.listenDebounceFirst(type, callback, options);
             case "last": return this.listenDebounceLast(type, callback, options);
         }
     }
 
-    listenDebounceFirst<P extends K, T = Detail<E, P>>(type: P, callback: EventListener2<T>, options: { timeout: number } & AddEventListenerOptions = { timeout: 100 }) {
+    listenDebounceFirst<P extends K, T extends Detail<E, P>>(type: P, callback: EventListener2<T>, options: { timeout: number } & AddEventListenerOptions = { timeout: 100 }) {
         let lastMs = 0
         this.listen(
             type,
@@ -94,7 +94,7 @@ export class EventTarget2<E extends EventMap = {}, K extends string = EventMapKe
         )
     }
 
-    listenDebounceLast<P extends K, T = Detail<E, P>>(type: P, callback: EventListener2<T>, options: { timeout: number } & AddEventListenerOptions = { timeout: 100 }) {
+    listenDebounceLast<P extends K, T extends Detail<E, P>>(type: P, callback: EventListener2<T>, options: { timeout: number } & AddEventListenerOptions = { timeout: 100 }) {
         let timoutInstance: number;
         this.listen(
             type,
