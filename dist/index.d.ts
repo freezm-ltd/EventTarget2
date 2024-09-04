@@ -9,7 +9,7 @@ export declare class EventTarget2<E extends EventMap = {}, K extends string = Ev
     listeners: Map<string, Set<EventListener2>>;
     waitFor<T>(type: K, compareValue?: T): Promise<T>;
     callback<T>(type: K, callback: (result?: T) => void): void;
-    dispatch<T = EventMap[K]["detail"]>(type: K, detail?: T): void;
+    dispatch(type: K, detail?: EventMap[K]["detail"]): void;
     listen<T, R = void>(type: K, callback: EventListener2<T, R>, options?: boolean | AddEventListenerOptions | undefined): void;
     remove<T, R = void>(type: K, callback: EventListener2<T, R>, options?: boolean | AddEventListenerOptions | undefined): void;
     destroy(): void;

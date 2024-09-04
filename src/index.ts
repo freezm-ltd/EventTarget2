@@ -24,7 +24,7 @@ export class EventTarget2<E extends EventMap = {}, K extends string = EventMapKe
         this.waitFor<T>(type).then(callback);
     }
 
-    dispatch<T = EventMap[K]["detail"]>(type: K, detail?: T) {
+    dispatch(type: K, detail?: EventMap[K]["detail"]) {
         this.dispatchEvent(new CustomEvent(type, detail !== undefined ? { detail } : undefined));
     }
 
