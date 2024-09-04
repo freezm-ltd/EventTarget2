@@ -1,10 +1,11 @@
 export type EventListener2<T = any, R = any> = (evt: CustomEvent<T>) => R
 export type EventTarget2State = number | string | symbol
 
+export type EventMap = Record<string, CustomEvent>
 type _EventMapKey<EventMap> = Extract<keyof EventMap, string>
-type EventMapKey<EventMap> = (_EventMapKey<EventMap> extends never ? string : _EventMapKey<EventMap>)
+export type EventMapKey<EventMap> = (_EventMapKey<EventMap> extends never ? string : _EventMapKey<EventMap>)
 
-export class EventTarget2<EventMap extends Record<string, CustomEvent> = {}, K extends string = EventMapKey<EventMap>> extends EventTarget {
+export class EventTarget2<E extends EventMap = {}, K extends string = EventMapKey<E>> extends EventTarget {
     parent?: EventTarget2;
     state?: EventTarget2State
     listeners: Map<string, Set<EventListener2>> = new Map()
