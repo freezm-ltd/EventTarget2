@@ -3,6 +3,9 @@ export type EventTarget2State = number | string | symbol;
 export type EventMap = Record<string, CustomEvent>;
 export type EventMapKey<E extends EventMap> = keyof E extends never ? string : Extract<keyof E, string>;
 export type Detail<E extends EventMap, K extends keyof E> = E[K]["detail"];
+export type EventHandlerMap<M extends EventMap> = {
+    [K in keyof M]: EventListener2<M[K]["detail"]>;
+};
 export declare class EventTarget2<E extends EventMap = {}, K extends string = EventMapKey<E>> extends EventTarget {
     parent?: EventTarget2<E, K>;
     state?: EventTarget2State;
