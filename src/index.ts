@@ -165,15 +165,17 @@ export class EventTarget2<E extends EventMap = {}, K extends string = EventMapKe
         })
     }
 
-    bulkListen(handlerMap: EventHandlerMap<E>) {
+    bulkListen(handlerMap: Partial<EventHandlerMap<E>>) {
         for (let type in handlerMap) {
-            this.listen(type as unknown as K, handlerMap[type])
+            const handler = handlerMap[type]
+            if (handler) this.listen(type as unknown as K, handler)
         }
     }
 
-    bulkRemove(handlerMap: EventHandlerMap<E>) {
+    bulkRemove(handlerMap: Partial<EventHandlerMap<E>>) {
         for (let type in handlerMap) {
-            this.remove(type as unknown as K, handlerMap[type])
+            const handler = handlerMap[type]
+            if (handler) this.remove(type as unknown as K, handler)
         }
     }
 }

@@ -36,6 +36,6 @@ export declare class EventTarget2<E extends EventMap = {}, K extends string = Ev
     protected atomicQueue: Map<string, Array<() => PromiseLike<any> | any>>;
     _atomicInit(type: K): void;
     atomic<T>(type: K, func: () => PromiseLike<T> | T): Promise<T>;
-    bulkListen(handlerMap: EventHandlerMap<E>): void;
-    bulkRemove(handlerMap: EventHandlerMap<E>): void;
+    bulkListen(handlerMap: Partial<EventHandlerMap<E>>): void;
+    bulkRemove(handlerMap: Partial<EventHandlerMap<E>>): void;
 }

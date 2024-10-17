@@ -147,12 +147,14 @@ var EventTarget2 = class extends EventTarget {
   }
   bulkListen(handlerMap) {
     for (let type in handlerMap) {
-      this.listen(type, handlerMap[type]);
+      const handler = handlerMap[type];
+      if (handler) this.listen(type, handler);
     }
   }
   bulkRemove(handlerMap) {
     for (let type in handlerMap) {
-      this.remove(type, handlerMap[type]);
+      const handler = handlerMap[type];
+      if (handler) this.remove(type, handler);
     }
   }
 };
