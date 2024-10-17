@@ -164,4 +164,16 @@ export class EventTarget2<E extends EventMap = {}, K extends string = EventMapKe
             this.dispatch("__atomic-add" as any, type as any)
         })
     }
+
+    bulkListen(handlerMap: EventHandlerMap<E>) {
+        for (let type in handlerMap) {
+            this.listen(type as unknown as K, handlerMap[type])
+        }
+    }
+
+    bulkRemove(handlerMap: EventHandlerMap<E>) {
+        for (let type in handlerMap) {
+            this.remove(type as unknown as K, handlerMap[type])
+        }
+    }
 }

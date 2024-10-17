@@ -145,6 +145,16 @@ var EventTarget2 = class extends EventTarget {
       this.dispatch("__atomic-add", type);
     });
   }
+  bulkListen(handlerMap) {
+    for (let type in handlerMap) {
+      this.listen(type, handlerMap[type]);
+    }
+  }
+  bulkRemove(handlerMap) {
+    for (let type in handlerMap) {
+      this.remove(type, handlerMap[type]);
+    }
+  }
 };
 export {
   EventTarget2
